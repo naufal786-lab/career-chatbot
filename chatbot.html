@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Guidance Chatbot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8fafc;
+        }
+        .chatbot-container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 24px 24px 24px;
+        }
+        .chat-bubble {
+            padding: 14px 18px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            max-width: 90%;
+        }
+        .bot {
+            background: #e3f0ff;
+            align-self: flex-start;
+        }
+        .user {
+            background: #d1ffe3;
+            align-self: flex-end;
+        }
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+            margin-bottom: 16px;
+        }
+        .restart-btn {
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <h3 class="text-center mb-3">Career Guidance Chatbot</h3>
+        <div class="chat-area" id="chat-area">
+            <!-- Chat bubbles will appear here -->
+        </div>
+        <form id="chat-form" class="d-flex">
+            <input type="text" id="user-input" class="form-control me-2" placeholder="Type your answer..." autocomplete="off" required>
+            <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+        <button class="btn btn-outline-secondary w-100 restart-btn" id="restart-btn" style="display:none;">Restart</button>
+    </div>
+    <script>
+        const chatArea = document.getElementById('chat-area');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const restartBtn = document.getElementById('restart-btn');
+
+        let questions = [];
+        let answers = [];
+        let currentQuestion = 0;
+        let finished = false;
+
+        function addBubble(text, sender) {
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}`;
+            bubble.innerText = text;
+            chatArea.appendChild(bubble);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function showIntro() {
+            addBubble("👋 Hi! I'm your Career Guidance Chatbot. I'll ask you a few questions to help you discover a career path that suits you. Ready?", 'bot');
+        }
+
+        function askNextQuestion() {
+            if (currentQuestion < questions.length) {
+                addBubble(questions[currentQuestion], 'bot');
+            } else {
+                getRecommendation();
+            }
+        }
+
+        function getRecommendation() {
+            addBubble('Analyzing your answers... 🤔', 'bot');
+            fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answers })
+            })
+            .then(res => res.json())
+            .then(data => {
+                addBubble(data.reply, 'bot');
+                finished = true;
+                restartBtn.style.display = 'block';
+                chatForm.style.display = 'none';
+            });
+        }
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (finished) return;
+            const answer = userInput.value.trim();
+            if (!answer) return;
+            addBubble(answer, 'user');
+            answers.push(answer);
+            userInput.value = '';
+            currentQuestion++;
+            setTimeout(askNextQuestion, 600);
+        });
+
+        restartBtn.addEventListener('click', function() {
+            chatArea.innerHTML = '';
+            answers = [];
+            currentQuestion = 0;
+            finished = false;
+            restartBtn.style.display = 'none';
+            chatForm.style.display = 'flex';
+            showIntro();
+            setTimeout(askNextQuestion, 1200);
+        });
+
+        // Initial load
+        fetch('/questions')
+            .then(res => res.json())
+            .then(data => {
+                questions = data.questions;
+                showIntro();
+                setTimeout(askNextQuestion, 1200);
+            });
+    </script>
+</body>
+</html> 
