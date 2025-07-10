@@ -72,12 +72,6 @@ env/
 .DS_Store
 ```
 
-## Contributing
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
-
-## Contact
-For questions or suggestions, please open an issue or contact the project maintainer.
-
 ## Notes
 - **API Key:** The Groq API key is currently hardcoded for demonstration. For production, use environment variables for security.
 
