@@ -14,9 +14,6 @@ An AI-powered chatbot to help users discover suitable career paths based on thei
 - **Backend:** Python, Flask
 - **AI Model:** Groq API (Llama-3.3-70b-versatile)
 
-## Project Screenshot
-<!-- Uncomment and add a screenshot if desired -->
-<!-- ![Chatbot Screenshot](screenshot.png) -->
 
 ## Setup Instructions
 
@@ -83,7 +80,6 @@ For questions or suggestions, please open an issue or contact the project mainta
 
 ## Notes
 - **API Key:** The Groq API key is currently hardcoded for demonstration. For production, use environment variables for security.
-- **Do not upload your `.venv` folder or any sensitive files to GitHub.**
 
 ## License
 This project is for educational purposes. 
